@@ -1,0 +1,29 @@
+---
+
+-  name: Get status of etc repo
+   register: hg_st
+   always_run: yes
+   changed_when: no
+   when: commit|bool
+   command: hg --cwd /etc st
+
+- name: Commit etc repo before actions if needed
+  when: commit|bool and hg_st.stdout
+  command: hg --cwd /etc com -u '{{ hgusers[hguser] }}' -Am '{{ comment }}'
+
+- name: Push if requested
+  delegate_to: localhost
+  register: push
+  failed_when: push.rc > 1
+  changed_when: False
+  when: push|bool
+  command: ssh -A {{ ansible_ssh_host|default(inventory_hostname) }} -l root hg --cwd /etc push
+
+- name: Get last commit id
+  register: id
+  command: hg --cwd /etc id
+  always_run: True
+  changed_when: False
+
+- name: Print last commit id
+  debug: { msg: '{{ id.stdout.split()[0] }}' }

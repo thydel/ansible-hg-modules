@@ -1,0 +1,50 @@
+---
+module: hg_commit
+
+short_description:
+
+  - Commit a mercurial repository if needed
+
+description:
+     
+  - The M(hg_commit) module commit a mercurial repository if there is
+    changed files in the working directory
+
+  - M(hg_commit) set C(hg_commit) dict facts to contains the id of the
+    last commit
+
+options:
+
+  cwd:
+    description: the path of repository
+    required: True
+    aliases: [ src, repos, repository ]
+
+  user:
+    description: The user who commit
+    required: False
+    
+  com:
+    description: The comment
+    required: True
+    aliases: [ comment, commentary ]
+
+  addremove:
+    description: Mark new/missing files as added/removed before committing
+    required: False
+    default: True
+
+  push:
+    description: push changes to the specified destination
+    required: False
+    default: False
+    
+  dest:
+    description: Destination of push if not default
+    required: False
+    
+    
+notes: []
+requirements: [ "mercurial" ]
+author: Thierry Delamare
+...

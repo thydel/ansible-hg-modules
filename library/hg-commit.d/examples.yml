@@ -1,0 +1,4 @@
+- hg_commit:
+    cwd: /etc
+    com: add an interface
+    user: tde
