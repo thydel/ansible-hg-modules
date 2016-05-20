@@ -42,7 +42,7 @@ options:
     
 notes: []
 requirements: [ "mercurial" ]
-author: Christophe de Traversay
+author: [ "Thierry Delamare", "Christophe de Traversay"]
 ...
 '''
 
