@@ -1,4 +1,4 @@
 - hg_commit:
     cwd: /etc
-    com: add an interface
-    user: tde
+    com: add 2nd network interface
+    user: cty

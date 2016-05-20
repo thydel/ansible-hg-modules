@@ -10,72 +10,63 @@ short_description:
 
 description:
      
-  - The M(hg_commit) module commit a mercurial repository if there is
-    changed files in the working directory
+  - The M(hg_commit) module commits a mercurial repository
+    if there are changed files in the working directory
 
-  - M(hg_commit) set C(hg_commit) dict facts to contains the id of the
-    last commit
+  - M(hg_commit) sets C(hg_commit) dict facts to contain
+    the id of the last commit
 
 options:
 
   cwd:
-    description: the path of repository
+    description: The path of repository
     required: True
-    aliases: [ src, repos, repository ]
+    aliases: [ src, repo, repos, repository ]
 
-  user:
-    description: The user who commit
-    required: False
-    
   com:
     description: The comment
     required: True
     aliases: [ comment, commentary ]
 
+  user:
+    description: The user who commits
+    required: False
+    aliases: [ usr ]
+    
   addremove:
     description: Mark new/missing files as added/removed before committing
     required: False
     default: True
 
-  push:
-    description: push changes to the specified destination
-    required: False
-    default: False
-    
-  dest:
-    description: Destination of push if not default
-    required: False
     
     
 notes: []
 requirements: [ "mercurial" ]
-author: Thierry Delamare
+author: Christophe de Traversay
 ...
 '''
 
 EXAMPLES = '''
 - hg_commit:
     cwd: /etc
-    com: add an interface
-    user: tde
+    com: add 2nd network interface
+    user: cty
 '''
 
 def main():
     
     argument_spec = dict(
         cwd = dict(required=True, aliases=['src', 'repos', 'repository'], type='str'),
-        user = dict(required=False, type='str'),
         com = dict(required=True, aliases=['comment', 'commentary'], type='str'),
+        user = dict(required=False, type='str'),
         addremove = dict(required=False, choices=BOOLEANS, type='bool', default=True),
-        push = dict(required=False, choices=BOOLEANS, type='bool', default=False),
-        dest = dict(required=False, type='str'),
         )
 
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
-    changed = False
     info = {}
     ansible_facts = { 'hg_commit': info }
+    changed = False
 
     def getargs(arg):
         globals()[arg] = module.params.get(arg)
@@ -85,8 +76,7 @@ def main():
     cmd_hg = ['hg', '--cwd', cwd]
     cmd_id = cmd_hg + ['id']
     cmd_st = cmd_hg + ['st']
-    cmd_push = cmd_hg + ['push']
-    if dest: cmd_push += [dest] 
+
     cmd_comm = cmd_hg + ['com']
     if user: cmd_comm += ['-u', user]
     if addremove: cmd_comm += ['-A']
@@ -97,7 +87,7 @@ def main():
 
     rc, out, err = module.run_command(cmd_st, check_rc=True)
     status = out
-    info['status'] = status.split('\n') # todo last line
+    info['status'] = status.rstrip('\n').split('\n')
 
     if not status:
         module.exit_json(changed=changed, ansible_facts=ansible_facts)
@@ -108,8 +98,6 @@ def main():
     rc, out, err = module.run_command(cmd_comm, check_rc=True) # todo error ?
     rc, out, err = module.run_command(cmd_id, check_rc=True)
     info['id'] = out.split()[0]
-    if push:
-        rc, out, err = module.run_command(cmd_push, check_rc=True)
 
     module.exit_json(changed=changed, ansible_facts=ansible_facts)
 
