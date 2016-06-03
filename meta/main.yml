@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Thierry Delamare & Christophe de Traversay
+  description: Commit a mercurial repository if needed
+  company: EpiConcept
+  license: MIT
+  min_ansible_version: 1.9
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+  categories:
+  - system
+dependencies: []
