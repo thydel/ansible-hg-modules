@@ -1,11 +1,56 @@
 #!/usr/bin/python
 
 DOCUMENTATION = '''
-#include documentation.yml
+---
+module: hg_commit
+
+short_description:
+
+  - Commit a mercurial repository if needed
+
+description:
+     
+  - The M(hg_commit) module commits a mercurial repository
+    if there are changed files in the working directory
+
+  - M(hg_commit) sets C(hg_commit) dict facts to contain
+    the id of the last commit
+
+options:
+
+  cwd:
+    description: The path of repository
+    required: True
+    aliases: [ src, repo, repos, repository ]
+
+  com:
+    description: The comment
+    required: True
+    aliases: [ comment, commentary ]
+
+  user:
+    description: The user who commits
+    required: False
+    aliases: [ usr ]
+    
+  addremove:
+    description: Mark new/missing files as added/removed before committing
+    required: False
+    default: True
+
+    
+    
+notes: []
+requirements: [ "mercurial" ]
+author: [ "Thierry Delamare", "Christophe de Traversay"]
+...
 '''
 
 EXAMPLES = '''
-#include examples.yml
+- hg_commit:
+    cwd: /etc
+    com: add 2nd network interface
+    user: cty
 '''
 
 def main():
@@ -26,7 +71,9 @@ def main():
     def getargs(arg):
         globals()[arg] = module.params.get(arg)
         
-    map(getargs, argument_spec.keys())
+    # map(getargs, argument_spec.keys())
+    for arg in argument_spec.keys():
+        getargs(arg)
 
     cmd_hg = ['hg', '--cwd', cwd]
     cmd_id = cmd_hg + ['id']
